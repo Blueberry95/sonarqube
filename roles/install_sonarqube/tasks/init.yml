@@ -1,0 +1,41 @@
+---
+
+- name: Add the user 'johnd' with a specific uid and a primary group of 'admin'
+  user:
+    name: "{{ sonar_username }}"
+    password: "{{ sonar_password }}"
+
+- name: Install prereq
+  yum:
+    name: unzip
+    state: present
+    update_cache: yes
+  register: install_prereq
+  retries: 6
+  delay: 10
+  until: install_prereq is success
+
+- sysctl:
+    name: vm.max_map_count
+    value: 262144
+    state: present
+
+
+- sysctl:
+    name: fs.file-max
+    value: 65536
+    state: present
+
+- name: Set file descriptors
+  pam_limits:
+    domain: "*"
+    limit_type: soft
+    limit_item: nofile
+    value: 65536
+
+- name: Set file threads
+  pam_limits:
+    domain: "*"
+    limit_type: soft
+    limit_item: nproc
+    value: 4096

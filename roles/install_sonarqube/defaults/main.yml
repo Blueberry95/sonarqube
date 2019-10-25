@@ -1,13 +1,15 @@
 ---
 
-
 # Installation varialbles
 postgress_components: 
   - postgresql-server
   - postgresql-contrib 
+  
+sonar_url: "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.8.zip"
+sonar_base: "/opt/sonarqube"
+sonar_archive: "/tmp/sonarqube.zip"
 
 # Login defaults
-default_postgress_username: postgress
-default_sonar_username: sonarqube
-default_sonar_password: sonarqube
-
+sonar_username: sonarqube
+sonar_password: sonarqube
+sonar_db: sonar

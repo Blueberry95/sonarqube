@@ -1,6 +1,7 @@
 ---
 
-- name: Install Jenkins
+- name: Install Jenkins and Sonarqube
   become: yes
   roles:
     - role: install_jenkins
+    - role: install_sonarqube

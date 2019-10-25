@@ -1,0 +1,47 @@
+---
+
+- name: Download Sonarqube
+  get_url:
+    url: "{{ sonar_url }}"
+    dest: "{{ sonar_archive }}"
+  register: download_sonar
+  retries: 6
+  delay: 10
+  until: download_sonar is success
+
+- name: Unarchive Sonarqube
+  unarchive:
+    src: "{{ sonar_archive }}"
+    dest: "/opt"
+    creates: "{{ sonar_base }}"
+    owner: "{{ sonar_username }}"
+    group: "{{ sonar_username }}"
+  register: unarchive_sonar
+  retries: 6
+  delay: 10
+  until: unarchive_sonar is success
+
+- name: Create a directory for sonarqube
+  file:
+    path: "{{ sonar_base }}"
+    state: directory
+    mode: 0755
+    owner: "{{ sonar_username }}"
+    group: "{{ sonar_username }}"
+
+- name: Moves sonarqube into base directory
+  shell: "mv /opt/sonarqube-*/* {{ sonar_base }}/"
+  ignore_errors: yes
+
+- name: Copy job config into seed job directory
+  template:
+    src: sonar.properties.j2
+    dest: "{{ sonar_base }}/conf/sonar.properties.xml"
+    owner: "{{ sonar_username }}"
+    group: "{{ sonar_username }}"
+    mode: 0644
+    force: yes
+
+- name: Start Sonarqube
+  shell: "/opt/sonarqube/bin/linux-x86-64/sonar.sh start"
+  become_user: "{{ sonar_username }}"

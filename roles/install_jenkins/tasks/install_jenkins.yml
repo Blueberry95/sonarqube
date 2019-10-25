@@ -12,8 +12,13 @@
 
 - name: Download specific Jenkins version
   get_url:
-    url: "{{ jenkins_pkg_url }}/jenkins_{{ jenkins_version }}.noarch.rpm"
+    timeout: 90
+    url: "{{ jenkins_pkg_url }}/jenkins-{{ jenkins_version }}.noarch.rpm"
     dest: "/tmp/jenkins_{{ jenkins_version }}.noarch.rpm"
+  register: download_jenkins
+  retries: 6
+  delay: 10
+  until: download_jenkins is success
 
 - name: Install our specific version of Jenkins
   yum:

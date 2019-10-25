@@ -12,6 +12,7 @@
 
 - name: Run postgress initialization
   shell: "postgresql-setup --initdb"
+  ignore_errors: yes
 
 - name: Make sure that postgress is stopped
   systemd: 
@@ -31,6 +32,14 @@
     state: started
     enabled: yes
 
-- name: Run postgress configuration
-  shell: "createuser sonar; psql; ALTER USER sonar WITH ENCRYPTED password 'sonar'; CREATE DATABASE sonar WITH ENCODING 'UTF8' OWNER sonar TEMPLATE=template0; \q"
+- name: Create user for sonarqube
+  shell: "createuser sonar"
   become_user: postgres
+  ignore_errors: yes
+
+- name: Create user for sonarqube
+  shell: |
+    psql -c "ALTER USER {{ sonar_username }} WITH ENCRYPTED password '{{ sonar_password }}';" 
+    psql -c "CREATE DATABASE {{ sonar_db }} WITH ENCODING 'UTF8' OWNER {{ sonar_username }} TEMPLATE=template0;"
+  become_user: postgres
+  ignore_errors: yes

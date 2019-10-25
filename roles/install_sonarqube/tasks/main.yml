@@ -1,0 +1,8 @@
+---
+
+# Run initial system config.
+- include_tasks: init.yml
+
+- include_tasks: postgress_install.yml
+
+- include_tasks: sonar_install.yml
