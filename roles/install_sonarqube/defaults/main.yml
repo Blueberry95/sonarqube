@@ -1,0 +1,13 @@
+---
+
+
+# Installation varialbles
+postgress_components: 
+  - postgresql-server
+  - postgresql-contrib 
+
+# Login defaults
+default_postgress_username: postgress
+default_sonar_username: sonarqube
+default_sonar_password: sonarqube
+

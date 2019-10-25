@@ -1,0 +1,36 @@
+---
+
+- name: Install postgress sql
+  yum:
+    name: "{{ postgress_components }}"
+    state: present
+    update_cache: yes
+  register: install_postgress
+  retries: 6
+  delay: 10
+  until: install_postgress is success
+
+- name: Run postgress initialization
+  shell: "postgresql-setup --initdb"
+
+- name: Make sure that postgress is stopped
+  systemd: 
+    name: postgresql 
+    state: stopped
+
+- name: Replace postgress config file
+  file:
+    src: /file/pg_hba.conf
+    dest: /var/lib/pgsql/data/pg_hba.conf
+    owner: postgres
+    group: postgres
+
+- name: Make sure that postgress is started
+  systemd: 
+    name: postgresql 
+    state: started
+    enabled: yes
+
+- name: Run postgress configuration
+  shell: "createuser sonar; psql; ALTER USER sonar WITH ENCRYPTED password 'sonar'; CREATE DATABASE sonar WITH ENCODING 'UTF8' OWNER sonar TEMPLATE=template0; \q"
+  become_user: postgres

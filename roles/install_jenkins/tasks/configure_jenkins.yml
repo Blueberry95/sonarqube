@@ -38,7 +38,7 @@
 
 # Restart jenkins to apply configuration script
 - name: Restart jenkins
-  service: 
+  systemd: 
     name: jenkins 
     state: restarted
 

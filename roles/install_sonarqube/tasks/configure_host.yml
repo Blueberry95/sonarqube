@@ -1,0 +1,11 @@
+---
+
+- name: Install postgress sql
+  yum:
+    name: "{{ postgress_components }}"
+    state: present
+    update_cache: yes
+  register: install_postgress
+  retries: 6
+  delay: 10
+  until: install_postgress is success
