@@ -1,6 +1,6 @@
 ---
 
-- name: Add the user 'johnd' with a specific uid and a primary group of 'admin'
+- name: Add the user 'Sonar' 
   user:
     name: "{{ sonar_username }}"
     password: "{{ sonar_password }}"
@@ -19,7 +19,6 @@
     name: vm.max_map_count
     value: 262144
     state: present
-
 
 - sysctl:
     name: fs.file-max

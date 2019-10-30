@@ -33,7 +33,7 @@
   shell: "mv /opt/sonarqube-*/* {{ sonar_base }}/"
   ignore_errors: yes
 
-- name: Copy job config into seed job directory
+- name: Copy sonar config into config directory
   template:
     src: sonar.properties.j2
     dest: "{{ sonar_base }}/conf/sonar.properties.xml"
