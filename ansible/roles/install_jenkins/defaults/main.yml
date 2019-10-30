@@ -2,7 +2,7 @@
 
 # Installation varialbles
 jenkins_pkg_url: "https://pkg.jenkins.io/redhat"
-jenkins_version: "2.200-1.1"
+jenkins_version: "2.150.3"
 jenkins_home: "/var/lib/jenkins"
 jenkins_seed_job: "{{ jenkins_home }}/jobs/seed_job"
 jenkins_installation_dependecies:
@@ -21,6 +21,7 @@ jenkins_admin_password: "neifn123"
 
 # Plugins
 jenkins_plugins: 
+  - sonar
   - cloudbees-folder
   - workflow-aggregator
   - greenballs

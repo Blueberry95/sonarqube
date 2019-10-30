@@ -25,3 +25,7 @@
     name: "/tmp/jenkins_{{ jenkins_version }}.noarch.rpm"
     state: present
 
+- name: Start jenkins
+  systemd: 
+    name: jenkins 
+    state: started

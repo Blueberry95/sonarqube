@@ -23,8 +23,8 @@
   file:
     src: /file/pg_hba.conf
     dest: /var/lib/pgsql/data/pg_hba.conf
-    owner: postgres
-    group: postgres
+    owner: "{{ postgres_user }}"
+    group: "{{ postgres_user }}"
 
 - name: Make sure that postgress is started
   systemd: 
@@ -33,13 +33,13 @@
     enabled: yes
 
 - name: Create user for sonarqube
-  shell: "createuser sonar"
-  become_user: postgres
+  shell: "createuser {{ sonar_username }}"
+  become_user: "{{ postgres_user }}"
   ignore_errors: yes
 
 - name: Create user for sonarqube
   shell: |
     psql -c "ALTER USER {{ sonar_username }} WITH ENCRYPTED password '{{ sonar_password }}';" 
     psql -c "CREATE DATABASE {{ sonar_db }} WITH ENCODING 'UTF8' OWNER {{ sonar_username }} TEMPLATE=template0;"
-  become_user: postgres
+  become_user: "{{ postgres_user }}"
   ignore_errors: yes

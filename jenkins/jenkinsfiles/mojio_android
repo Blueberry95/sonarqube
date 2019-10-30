@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+    parameters {
+        string(name: 'GIT_BRANCH',  description: 'Branch which will be analyzed', defaultValue: 'master')
+    }
+    
+    stages {
+        stage('Clone repo') {
+            steps { 
+                cleanWs()
+                git branch: "${params.GIT_BRANCH}", 
+                credentialsId: "mojio_android", 
+                url: 'git@github.com:mojio/force-android.git'
+            }
+        }
+        stage('SonarQube analysis') {
+            steps { 
+                script {
+                    scannerHome = tool 'SonarQube'
+                }
+                withSonarQubeEnv('Sonarqube') {
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:force-android \
+                        -Dsonar.projectName='Mojio Force-Android' \
+                        -Dsonar.projectVersion=$BUILD_NUMBER \
+                        -Dsonar.host.url=http://localhost:9000 \
+                        -Dsonar.projectBaseDir=$(pwd)"
+                }
+            }
+        }
+    }
+}
