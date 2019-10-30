@@ -9,8 +9,8 @@ pipeline {
             steps { 
                 cleanWs()
                 git branch: "${params.GIT_BRANCH}", 
-                credentialsId: "mojio_android", 
-                url: 'git@github.com:mojio/force-android.git'
+                credentialsId: "mojio_bitbucket", 
+                url: 'git@bitbucket.org:mojio/phoenixandroid.git'
             }
         }
         stage('SonarQube analysis') {
@@ -19,11 +19,10 @@ pipeline {
                     scannerHome = tool 'SonarQube'
                 }
                 withSonarQubeEnv('Sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:force-android \
-                        -Dsonar.projectName='Mojio Force-Android' \
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:phoenix-android \
+                        -Dsonar.projectName='Mojio Phoenix-Android' \
                         -Dsonar.projectVersion=$BUILD_NUMBER \
-                        -Dsonar.host.url=http://localhost:9000 \
-                        -Dsonar.projectBaseDir=$(pwd)"
+                        -Dsonar.host.url=http://localhost:9000"
                 }
             }
         }

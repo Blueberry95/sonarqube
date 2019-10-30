@@ -9,7 +9,7 @@ pipeline {
             steps { 
                 cleanWs()
                 git branch: "${params.GIT_BRANCH}", 
-                credentialsId: "mojio_android", 
+                credentialsId: "mojio_android", IOS github (Force, PoC):
                 url: 'git@github.com:mojio/phoenix-ios.git'
             }
         }
