@@ -9,16 +9,16 @@ pipeline {
             steps { 
                 cleanWs()
                 git branch: "${params.GIT_BRANCH}", 
-                credentialsId: "mojio_android", IOS github (Force, PoC):
+                credentialsId: "mojio_android",
                 url: 'git@github.com:mojio/phoenix-ios.git'
             }
         }
         stage('SonarQube analysis') {
             steps { 
                 script {
-                    scannerHome = tool 'SonarQube'
+                    scannerHome = tool 'sonarqube'
                 }
-                withSonarQubeEnv('Sonarqube') {
+                withSonarQubeEnv('sonarqube') {
                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:phoenix-ios \
                         -Dsonar.projectName='Mojio Phoenix-IOS' \
                         -Dsonar.projectVersion=$BUILD_NUMBER \

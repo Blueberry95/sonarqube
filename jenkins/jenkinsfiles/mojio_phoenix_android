@@ -16,9 +16,9 @@ pipeline {
         stage('SonarQube analysis') {
             steps { 
                 script {
-                    scannerHome = tool 'SonarQube'
+                    scannerHome = tool 'sonarqube'
                 }
-                withSonarQubeEnv('Sonarqube') {
+                withSonarQubeEnv('sonarqube') {
                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:phoenix-android \
                         -Dsonar.projectName='Mojio Phoenix-Android' \
                         -Dsonar.projectVersion=$BUILD_NUMBER \

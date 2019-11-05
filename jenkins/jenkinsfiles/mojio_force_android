@@ -27,9 +27,9 @@ pipeline {
             steps { 
                 script {
                     // requires SonarQube Scanner 2.8+
-                    scannerHome = tool 'SonarQube'
+                    scannerHome = tool 'sonarqube'
                 }
-                withSonarQubeEnv('Sonarqube') {
+                withSonarQubeEnv('sonarqube') {
                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:force-android -Dsonar.projectName='Mojio Force-Android' -Dsonar.projectVersion=$BUILD_NUMBER"
                 }
             }
