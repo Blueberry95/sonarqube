@@ -11,7 +11,7 @@
   until: install_postgress is success
 
 - name: Run postgress initialization
-  shell: "postgresql-setup --initdb"
+  shell: "postgresql-setup initdb"
   ignore_errors: yes
 
 - name: Make sure that postgress is stopped

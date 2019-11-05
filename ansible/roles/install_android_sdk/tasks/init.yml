@@ -1,5 +1,13 @@
 ---
 
+- name: Create Android home directory
+  file:
+    path: "{{ android_home }}"
+    owner: "jenkins"
+    group: "jenkins"
+    state: directory
+    mode: 0755
+
 - name: Install prereq
   yum:
     name: unzip
@@ -10,4 +18,3 @@
   delay: 10
   until: install_prereq is success
 
-  
