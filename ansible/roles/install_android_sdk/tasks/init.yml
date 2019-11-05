@@ -1,0 +1,13 @@
+---
+
+- name: Install prereq
+  yum:
+    name: unzip
+    state: present
+    update_cache: yes
+  register: install_prereq
+  retries: 6
+  delay: 10
+  until: install_prereq is success
+
+  

@@ -1,0 +1,7 @@
+---
+
+# Run initial system config.
+- include_tasks: init.yml
+
+# Setup/install tasks.
+- include_tasks: install_sdk.yml

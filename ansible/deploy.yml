@@ -7,3 +7,4 @@
   roles:
     - role: install_jenkins
     - role: install_sonarqube
+    - role: install_android_sdk

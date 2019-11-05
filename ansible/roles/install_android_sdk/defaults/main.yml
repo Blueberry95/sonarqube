@@ -1,0 +1,7 @@
+---
+
+# Installation varialbles
+android_sdk_url: "https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip"
+android_home: "/opt/android"
+android_dest: "/tmp/sdk.zip"
+android_home_tools: "{{ android_home }}/tools"

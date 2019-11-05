@@ -1,0 +1,30 @@
+---
+
+- name: Download Android SDK
+  get_url:
+    url: "{{ android_sdk_url }}"
+    dest: "{{ android_dest }}"
+  register: download_sdk
+  retries: 6
+  delay: 10
+  until: download_sdk is success
+
+- name: Unarchive Android SDK
+  unarchive:
+    src: "{{ android_dest }}"
+    dest: "{{ android_home }}"
+    creates: "{{ android_home }}/tools"
+    owner: "jenkins"
+    group: "jenkins"
+  register: unarchive_sdk
+  retries: 6
+  delay: 10
+  until: unarchive_sdk is success
+
+- name: Add Android SDK to path
+  template:
+    src: env.sh.j2
+    dest: "/etc/profile.d/env.sh"
+    mode: 0755
+    
+    
