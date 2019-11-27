@@ -5,3 +5,7 @@ android_sdk_url: "https://dl.google.com/android/repository/sdk-tools-linux-43337
 android_home: "/opt/android"
 android_dest: "/tmp/sdk.zip"
 android_home_tools: "{{ android_home }}/tools"
+
+sdk_dependencies: 
+  - java-1.8.0-openjdk-devel
+  - unzip

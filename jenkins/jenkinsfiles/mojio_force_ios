@@ -1,7 +1,7 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'GIT_BRANCH',  description: 'Branch which will be analyzed', defaultValue: 'master')
+        string(name: 'GIT_BRANCH',  description: 'Branch which will be analyzed', defaultValue: 'develop')
     }
     
     stages {

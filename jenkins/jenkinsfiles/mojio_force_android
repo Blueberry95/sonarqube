@@ -1,8 +1,10 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'GIT_BRANCH',  description: 'Branch which will be analyzed', defaultValue: 'master')
-    }
+        string(name: 'GIT_BRANCH',  description: 'Branch which will be analyzed', defaultValue: 'develop')
+        string(name: 'BUILD_TYPE', description: 'BUILD_TYPE', defaultValue: 'debug')
+        string(name: 'FLAVOR', description: 'FLAVOR', defaultValue: 'force')
+    } 
     
     stages {
         stage('Clone repo') {
@@ -13,24 +15,43 @@ pipeline {
                 url: 'git@github.com:mojio/force-android.git'
             }
         }
-        stage('Print tasks') {
+        stage('Gradle build') {
             steps {
-                sh "./gradlew -Pcoverage clean init app:build tasks --all"
+                script {
+                    BUILD_VARIANT = "${params.FLAVOR}${params.BUILD_TYPE.capitalize()}"
+                }
+                sh "./gradlew -Pcoverage -Dorg.gradle.jvmargs=-Xmx2048m cleanBuildCache clean assemble${BUILD_VARIANT.capitalize()} --stacktrace"
             }
         }
-        stage('Jacoco test report') {
+        stage('Android lint & Jacoco test report & Detekt run') {
             steps {
-                sh "./gradlew -Pcoverage app:jacocoTestForceDebugUnitTestReport"
+                script {
+                    BUILD_VARIANT = "${params.FLAVOR}${params.BUILD_TYPE.capitalize()}"
+                }
+                catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
+                    sh "./gradlew jacocoTest${BUILD_VARIANT.capitalize()}UnitTestReport"
+                }
+                catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
+                    sh "./gradlew lint${BUILD_VARIANT.capitalize()}"
+                }
+                catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
+                    sh "./gradlew detektGenerateConfig detekt"
+                }
             }
         }
+        // detekt will fall on issues, so we catching error here and continue execution
         stage('SonarQube analysis') {
             steps { 
                 script {
                     // requires SonarQube Scanner 2.8+
                     scannerHome = tool 'sonarqube'
+                    BUILD_VARIANT = "${params.FLAVOR}${params.BUILD_TYPE.capitalize()}"
                 }
                 withSonarQubeEnv('sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:force-android -Dsonar.projectName='Mojio Force-Android' -Dsonar.projectVersion=$BUILD_NUMBER"
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:force-android -Dsonar.projectName='Mojio Force-Android' -Dsonar.projectVersion=$BUILD_NUMBER \
+                    -Dsonar.java.libraries=$ANDROID_HOME/platforms/android-29/android.jar \
+                    -Dsonar.java.coveragePlugin=jacoco -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacocoTest${BUILD_VARIANT.capitalize()}UnitTestReport/jacocoTest${BUILD_VARIANT.capitalize()}UnitTestReport.xml \
+                    -Dsonar.androidLint.reportPaths=app/build/reports/lint-results-${BUILD_VARIANT}.xml -Dsonar.kotlin.detekt.reportPaths=app/build/reports/detekt/detekt.xml"
                 }
             }
         }

@@ -10,7 +10,7 @@
 
 - name: Install prereq
   yum:
-    name: unzip
+    name: "{{ sdk_dependencies }}"
     state: present
     update_cache: yes
   register: install_prereq

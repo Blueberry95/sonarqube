@@ -13,7 +13,7 @@
   unarchive:
     src: "{{ android_dest }}"
     dest: "{{ android_home }}"
-    creates: "{{ android_home }}/tools"
+    creates: "{{ android_home_tools }}"
     owner: "jenkins"
     group: "jenkins"
   register: unarchive_sdk
@@ -27,4 +27,6 @@
     dest: "/etc/profile.d/env.sh"
     mode: 0755
     
-    
+- name: Install licenses 
+  shell: "yes | {{ android_home_tools }}/bin/sdkmanager --licenses --sdk_root={{ android_home }}"
+     

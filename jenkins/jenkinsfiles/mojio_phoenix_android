@@ -1,7 +1,7 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'GIT_BRANCH',  description: 'Branch which will be analyzed', defaultValue: 'master')
+        string(name: 'GIT_BRANCH',  description: 'Branch which will be analyzed', defaultValue: 'develop')
     }
     
     stages {
@@ -13,16 +13,25 @@ pipeline {
                 url: 'git@bitbucket.org:mojio/phoenixandroid.git'
             }
         }
+        stage("Gradle build") {
+            steps {
+                sh "./gradlew -PdevelopmentBuild -Dorg.gradle.jvmargs=-Xmx2048m clean assembleMotion"
+            }
+        }
         stage('SonarQube analysis') {
             steps { 
                 script {
                     scannerHome = tool 'sonarqube'
                 }
                 withSonarQubeEnv('sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:phoenix-android \
+                    sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=mojio:phoenix-android \
                         -Dsonar.projectName='Mojio Phoenix-Android' \
                         -Dsonar.projectVersion=$BUILD_NUMBER \
-                        -Dsonar.host.url=http://localhost:9000"
+                        -Dsonar.host.url=http://localhost:9000 \
+                        -Dsonar.java.binaries=app/build/intermediates/javac \
+                        -Dsonar.java.libraries=$ANDROID_HOME/platforms/android-29/android.jar \
+                        -Dsonar.java.tests=app/src/test,app/src/androidTest"
+                        // -Dsonar.tests=app/src/test,app/src/androidTest"
                 }
             }
         }
