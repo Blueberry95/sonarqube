@@ -19,6 +19,7 @@ pipeline {
                     scannerHome = tool 'sonarqube'
                 }
                 withSonarQubeEnv('sonarqube') {
+                    sh "npm install -D typescript"
                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:force-web \
                         -Dsonar.projectName='Mojio Force-Web' \
                         -Dsonar.projectVersion=$BUILD_NUMBER \
