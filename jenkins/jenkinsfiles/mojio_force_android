@@ -5,7 +5,11 @@ pipeline {
         string(name: 'BUILD_TYPE', description: 'BUILD_TYPE', defaultValue: 'debug')
         string(name: 'FLAVOR', description: 'FLAVOR', defaultValue: 'force')
     } 
-    
+    environment {
+        PROJECT_KEY = "mojio:force-android"
+        BASE_URL = "http://localhost:9000/api"
+    }
+
     stages {
         stage('Clone repo') {
             steps { 
@@ -48,10 +52,30 @@ pipeline {
                     BUILD_VARIANT = "${params.FLAVOR}${params.BUILD_TYPE.capitalize()}"
                 }
                 withSonarQubeEnv('sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mojio:force-android -Dsonar.projectName='Mojio Force-Android' -Dsonar.projectVersion=$BUILD_NUMBER \
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${PROJECT_KEY} -Dsonar.projectName='Mojio Force-Android' -Dsonar.projectVersion=$BUILD_NUMBER \
                     -Dsonar.java.libraries=$ANDROID_HOME/platforms/android-29/android.jar \
                     -Dsonar.java.coveragePlugin=jacoco -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacocoTest${BUILD_VARIANT.capitalize()}UnitTestReport/jacocoTest${BUILD_VARIANT.capitalize()}UnitTestReport.xml \
-                    -Dsonar.androidLint.reportPaths=app/build/reports/lint-results-${BUILD_VARIANT}.xml -Dsonar.kotlin.detekt.reportPaths=app/build/reports/detekt/detekt.xml"
+                    -Dsonar.androidLint.reportPaths=app/build/reports/lint-results-${BUILD_VARIANT}.xml -Dsonar.kotlin.detekt.reportPaths=app/build/reports/detekt/detekt.xml" 
+                }
+                script {
+                    ANALYSIS_ID = sh(
+                        script:"curl -u admin:admin $BASE_URL/project_analyses/search?project=$PROJECT_KEY | jq -rM .analyses[0].key | tr -d '\n'",
+                        returnStdout: true
+                    )
+                    PROJECT_ID = sh(
+                        script:"curl -u admin:admin $BASE_URL/projects/search?projects=$PROJECT_KEY | jq -rM .components[0].id | tr -d '\n'",
+                        returnStdout: true
+                    )
+                    QUALITY_STATUS = sh(
+                        script:"curl -u admin:admin \'$BASE_URL/qualitygates/project_status?projectKey=$PROJECT_KEY&projectId=$PROJECT_ID&analysisId=$ANALYSIS_ID\' | jq -rM .projectStatus.status | tr -d '\n'",
+                        returnStdout: true
+                    )
+
+                    if (QUALITY_STATUS == "OK") {                                          
+                        echo "Analyses was successful"
+                    } else {                                   
+                        error("Build failed because analyses wasn't successful")
+                    }
                 }
             }
         }
