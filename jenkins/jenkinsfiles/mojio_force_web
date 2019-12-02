@@ -1,9 +1,11 @@
 pipeline {
     agent any
-    parameters {
-        string(name: 'GIT_BRANCH',  description: 'Branch which will be analyzed', defaultValue: 'master')
+    triggers {
+        cron('0 23 * * *')
     }
-    
+    parameters {
+        string(name: 'GIT_BRANCH',  description: 'Branch which will be analyzed', defaultValue: 'deployment/force_0.5')
+    }
     stages {
         stage('Clone repo') {
             steps { 

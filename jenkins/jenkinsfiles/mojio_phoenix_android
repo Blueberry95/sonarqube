@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    triggers {
+        cron('30 23 * * *')
+    }
     parameters {
         string(name: 'GIT_BRANCH',  description: 'Branch which will be analyzed', defaultValue: 'develop')
     }
